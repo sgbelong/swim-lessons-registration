@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register – Redding Swim Lessons</title>
+<script src="https://js.stripe.com/v3/"></script>
+<style>
+:root {
+  --blue:#2a7fc1; --blue-light:#e8f4fd; --blue-mid:#c5dff4; --blue-dark:#1a5a8a;
+  --teal:#3aab8c; --teal-light:#e6f7f3;
+  --white:#fff; --gray-bg:#f7f9fc; --gray-border:#dde4ed; --gray-text:#5c6b7a;
+  --text:#1e2d3d; --red:#c0392b; --red-light:#fdf0ee;
+  --shadow:0 2px 12px rgba(42,127,193,.10); --radius:10px; --radius-sm:6px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--gray-bg);color:var(--text);min-height:100vh;padding:24px 16px 48px;}
+.container{max-width:700px;margin:0 auto;}
+h1{font-size:1.7rem;font-weight:700;color:var(--blue-dark);text-align:center;margin-bottom:4px;}
+.subtitle{text-align:center;color:var(--gray-text);font-size:.97rem;margin-bottom:12px;}
+.notice{background:#fff8e1;border:1px solid #ffe082;color:#7a5c00;padding:12px 16px;border-radius:var(--radius-sm);font-size:.9rem;margin-bottom:24px;text-align:center;}
+.card{background:var(--white);border-radius:var(--radius);border:1px solid var(--gray-border);box-shadow:var(--shadow);padding:28px;margin-bottom:20px;}
+.section-title{font-size:1.08rem;font-weight:700;color:var(--blue-dark);margin-bottom:18px;display:flex;align-items:center;gap:8px;}
+.num{width:26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+label{display:block;font-size:.88rem;font-weight:600;color:var(--gray-text);margin-bottom:5px;margin-top:14px;}
+input[type=text],input[type=email],input[type=tel],input[type=number],select,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--gray-border);border-radius:var(--radius-sm);font-size:.95rem;font-family:inherit;color:var(--text);background:var(--white);outline:none;}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(42,127,193,.12);}
+.instructor-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:4px;}
+.instructor-card{border:2px solid var(--gray-border);border-radius:var(--radius);padding:14px 10px 12px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;user-select:none;}
+.instructor-card:hover,.instructor-card.selected{border-color:var(--blue);background:var(--blue-light);}
+.instructor-card .icon{font-size:1.8rem;margin-bottom:6px;}
+.instructor-card .name{font-weight:700;font-size:.95rem;color:var(--blue-dark);}
+.instructor-card .loc{font-size:.78rem;color:var(--gray-text);margin-top:2px;}
+.week-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:4px;}
+.week-btn{border:2px solid var(--gray-border);border-radius:var(--radius-sm);padding:10px 8px;text-align:center;cursor:pointer;background:var(--white);font-family:inherit;font-size:.88rem;font-weight:600;color:var(--text);}
+.week-btn:hover:not(.full){border-color:var(--blue);background:var(--blue-light);}
+.week-btn.selected{border-color:var(--blue);background:var(--blue);color:#fff;}
+.week-btn.full{background:#f0f0f0;color:#aaa;cursor:not-allowed;border-color:#e0e0e0;text-decoration:line-through;}
+.week-btn .spots{font-size:.73rem;font-weight:400;display:block;margin-top:3px;}
+.week-btn.selected .spots{color:rgba(255,255,255,.85);}
+.week-time-block{border:1.5px solid var(--gray-border);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px;}
+.week-time-block .wlabel{font-weight:700;font-size:.9rem;color:var(--blue-dark);margin-bottom:10px;}
+.time-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:7px;}
+.time-btn{border:2px solid var(--gray-border);border-radius:var(--radius-sm);padding:8px 4px;text-align:center;cursor:pointer;background:var(--white);font-family:inherit;font-size:.82rem;font-weight:600;color:var(--text);}
+.time-btn:hover:not(.taken){border-color:var(--teal);background:var(--teal-light);}
+.time-btn.selected{border-color:var(--teal);background:var(--teal);color:#fff;}
+.time-btn.taken{background:#f0f0f0;color:#bbb;cursor:not-allowed;border-color:#e8e8e8;font-size:.78rem;}
+.level-list{display:flex;flex-direction:column;gap:7px;}
+.level-item{display:flex;align-items:flex-start;gap:10px;border:2px solid var(--gray-border);border-radius:var(--radius-sm);padding:9px 12px;cursor:pointer;background:var(--white);}
+.level-item:hover,.level-item.selected{border-color:var(--blue);background:var(--blue-light);}
+.level-num{width:24px;height:24px;border-radius:50%;background:var(--blue-mid);color:var(--blue-dark);font-weight:700;font-size:.82rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.level-item.selected .level-num{background:var(--blue);color:#fff;}
+.level-name{font-weight:700;font-size:.9rem;}
+.level-desc{font-size:.8rem;color:var(--gray-text);margin-top:2px;}
+.waiver-box{max-height:160px;overflow-y:auto;border:1.5px solid var(--gray-border);border-radius:var(--radius-sm);padding:12px 14px;font-size:.83rem;line-height:1.6;color:var(--gray-text);background:var(--gray-bg);margin-bottom:12px;}
+.checkbox-row{display:flex;align-items:flex-start;gap:10px;margin-top:10px;}
+.checkbox-row input[type=checkbox]{width:18px;height:18px;flex-shrink:0;margin-top:1px;accent-color:var(--blue);}
+.checkbox-row span{font-size:.87rem;line-height:1.5;}
+.sig-field{border:1.5px solid var(--gray-border);border-radius:var(--radius-sm);padding:10px 12px;font-family:'Georgia',serif;font-size:1.15rem;font-style:italic;width:100%;color:var(--blue-dark);margin-top:8px;background:#fffdf5;}
+.price-box{background:var(--blue-light);border:1.5px solid var(--blue-mid);border-radius:var(--radius);padding:16px 18px;margin-bottom:20px;}
+.price-row{display:flex;justify-content:space-between;align-items:center;}
+.price-label{font-size:.92rem;color:var(--blue-dark);}
+.price-total{font-size:1.3rem;font-weight:800;color:var(--blue-dark);}
+.price-breakdown{font-size:.82rem;color:var(--blue-dark);margin-top:6px;line-height:1.8;white-space:pre-line;}
+/* Stripe card element */
+.stripe-box{border:1.5px solid var(--gray-border);border-radius:var(--radius-sm);padding:12px 14px;background:var(--white);margin-top:6px;}
+.stripe-box.focused{border-color:var(--blue);box-shadow:0 0 0 3px rgba(42,127,193,.12);}
+.stripe-lock{display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--gray-text);margin-top:8px;}
+.stripe-lock svg{flex-shrink:0;}
+.btn-submit{width:100%;padding:15px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-size:1.07rem;font-weight:700;cursor:pointer;margin-top:20px;}
+.btn-submit:hover{background:var(--blue-dark);}
+.btn-submit:disabled{background:#b0c8e0;cursor:not-allowed;}
+.error{color:var(--red);font-size:.83rem;margin-top:6px;}
+.hidden{display:none!important;}
+.alert-info{background:var(--blue-light);border:1px solid var(--blue-mid);color:var(--blue-dark);padding:10px 14px;border-radius:var(--radius-sm);font-size:.88rem;margin-bottom:12px;}
+.alert-warning{background:#fff8e1;border:1px solid #ffe082;color:#7a5c00;padding:10px 14px;border-radius:var(--radius-sm);font-size:.88rem;margin-bottom:12px;}
+.step-dots{display:flex;justify-content:center;gap:8px;margin-bottom:24px;}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--gray-border);}
+.dot.active{background:var(--blue);}
+.dot.done{background:var(--teal);}
+.week-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.week-tag{background:var(--blue);color:#fff;border-radius:20px;padding:4px 12px;font-size:.82rem;font-weight:600;display:flex;align-items:center;gap:6px;}
+.week-tag .x{cursor:pointer;font-size:1rem;opacity:.8;}
+.week-tag .x:hover{opacity:1;}
+.nav-btns{display:flex;justify-content:center;gap:12px;margin-top:8px;}
+.btn-back{padding:10px 24px;border:1.5px solid var(--gray-border);border-radius:var(--radius-sm);background:#fff;cursor:pointer;font-size:.93rem;font-weight:600;}
+.btn-next{padding:10px 28px;border:none;border-radius:var(--radius-sm);background:var(--blue);color:#fff;cursor:pointer;font-size:.93rem;font-weight:700;}
+.success-screen{text-align:center;padding:40px 20px;}
+.success-screen h2{color:var(--teal);font-size:1.5rem;margin-bottom:10px;}
+.success-screen p{color:var(--gray-text);font-size:.95rem;line-height:1.6;max-width:460px;margin:0 auto 16px;}
+.success-details{background:var(--blue-light);border-radius:var(--radius-sm);padding:14px 16px;font-size:.9rem;color:var(--blue-dark);text-align:left;line-height:1.8;}
+.cancel-note{font-size:.82rem;color:var(--gray-text);text-align:center;margin-top:12px;line-height:1.5;}
+.cancel-link{color:var(--blue);text-decoration:underline;cursor:pointer;}
+.cancel-card{border:1.5px solid #f0b9b3;background:#fffbfb;}
+@media(max-width:520px){.instructor-grid{grid-template-columns:1fr;}.card{padding:18px 14px;}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div id="main-form">
+  <h1>🏊 Register for Swim Lessons</h1>
+  <p class="subtitle">Private lessons · 4 sessions Mon–Thu · $80 per week</p>
+  <div class="notice">👨‍👩‍👧‍👦 <strong>Registering multiple children?</strong> Please complete a separate registration for each child.</div>
+
+  <div class="step-dots">
+    <div class="dot" id="d1"></div><div class="dot" id="d2"></div>
+    <div class="dot" id="d3"></div><div class="dot" id="d4"></div>
+    <div class="dot" id="d5"></div><div class="dot" id="d6"></div>
+  </div>
+
+  <!-- Step 1: Instructor -->
+  <div id="step1" class="card">
+    <div class="section-title"><div class="num">1</div> Choose an Instructor</div>
+    <div class="instructor-grid">
+      <div class="instructor-card" id="ic-Sienna" onclick="pickInstructor('Sienna')">
+        <div class="icon">🏊</div><div class="name">Sienna</div><div class="loc">Shasta View / Rancho</div>
+      </div>
+      <div class="instructor-card" id="ic-Hailey" onclick="pickInstructor('Hailey')">
+        <div class="icon">🏊</div><div class="name">Hailey</div><div class="loc">Palo Cedro</div>
+      </div>
+      <div class="instructor-card" id="ic-Madi" onclick="pickInstructor('Madi')">
+        <div class="icon">🏊</div><div class="name">Madi</div><div class="loc">Old Oregon</div>
+      </div>
+    </div>
+    <div id="e-instructor" class="error hidden">Please choose an instructor.</div>
+  </div>
+
+  <!-- Step 2: Weeks -->
+  <div id="step2" class="card hidden">
+    <div class="section-title"><div class="num">2</div> Choose Your Week(s)</div>
+    <div class="alert-info">You can sign up for multiple weeks! Each week = Mon–Thu, 4 lessons, $80.</div>
+    <div id="week-grid" class="week-grid"></div>
+    <div id="week-tags" class="week-tags"></div>
+    <div id="e-week" class="error hidden">Please select at least one week.</div>
+  </div>
+
+  <!-- Step 3: Time per week -->
+  <div id="step3" class="card hidden">
+    <div class="section-title"><div class="num">3</div> Choose a Time Slot</div>
+    <p style="font-size:.88rem;color:var(--gray-text);margin-bottom:16px;">Pick a time for each week. You can choose different times for different weeks. Lessons are 30 minutes, Mon–Thu.</p>
+    <div id="week-time-blocks"></div>
+    <div id="e-time" class="error hidden">Please choose a time for every selected week.</div>
+  </div>
+
+  <!-- Step 4: Child info -->
+  <div id="step4" class="card hidden">
+    <div class="section-title"><div class="num">4</div> About Your Child</div>
+    <label>Parent / Guardian Name</label>
+    <input type="text" id="f-parent" placeholder="Full name">
+    <label>Phone Number</label>
+    <input type="tel" id="f-phone" placeholder="(530) 000-0000">
+    <label>Email Address</label>
+    <input type="email" id="f-email" placeholder="you@email.com">
+    <label>Child's Name</label>
+    <input type="text" id="f-kid" placeholder="First and last name">
+    <label>Child's Age</label>
+    <input type="number" id="f-age" placeholder="e.g. 6" min="3" max="16">
+    <label>Medical conditions, allergies, or fears? <span style="font-weight:400;font-size:.82rem;">(optional)</span></label>
+    <textarea id="f-medical" rows="2" placeholder="e.g. ear tubes, fear of water"></textarea>
+    <label style="margin-top:18px;">Swimming Level</label>
+    <div class="level-list">
+      <div class="level-item" id="lv1" onclick="pickLevel(1)">
+        <div class="level-num">1</div>
+        <div><div class="level-name">Water Explorer (Beginner)</div><div class="level-desc">No experience. Learning comfort in water, floating, blowing bubbles.</div></div>
+      </div>
+      <div class="level-item" id="lv2" onclick="pickLevel(2)">
+        <div class="level-num">2</div>
+        <div><div class="level-name">Paddler (Early Swimmer)</div><div class="level-desc">Can float with support, kicks legs, starting to move independently.</div></div>
+      </div>
+      <div class="level-item" id="lv3" onclick="pickLevel(3)">
+        <div class="level-num">3</div>
+        <div><div class="level-name">Swimmer (Developing)</div><div class="level-desc">Swims short distances alone, learning freestyle and backstroke basics.</div></div>
+      </div>
+      <div class="level-item" id="lv4" onclick="pickLevel(4)">
+        <div class="level-num">4</div>
+        <div><div class="level-name">Stroke Builder (Intermediate)</div><div class="level-desc">Comfortable swimming laps, working on technique and new strokes.</div></div>
+      </div>
+      <div class="level-item" id="lv5" onclick="pickLevel(5)">
+        <div class="level-num">5</div>
+        <div><div class="level-name">Racer (Advanced)</div><div class="level-desc">Knows all four strokes, working on speed and competitive technique.</div></div>
+      </div>
+    </div>
+    <div id="e-level" class="error hidden">Please select a swimming level.</div>
+    <div id="e-fields" class="error hidden">Please fill in all required fields.</div>
+  </div>
+
+  <!-- Step 5: Waiver -->
+  <div id="step5" class="card hidden">
+    <div class="section-title"><div class="num">5</div> Liability Waiver</div>
+    <div class="waiver-box">
+      <strong>RELEASE OF LIABILITY, WAIVER OF CLAIMS, AND INDEMNITY AGREEMENT</strong><br><br>
+      In consideration of my child being permitted to participate in private swim lessons with Redding Swim Lessons, I hereby agree to the following:<br><br>
+      <strong>1. Assumption of Risk.</strong> I acknowledge that swimming and aquatic activities involve inherent risks of injury or death, including but not limited to drowning, slipping, collision, or physical exertion. I voluntarily assume all such risks on behalf of myself and my child.<br><br>
+      <strong>2. Release of Liability.</strong> I, on behalf of myself, my child, heirs, and legal representatives, hereby release, waive, and discharge the swim instructor(s), the pool owner, Redding Swim Lessons, and their agents from any and all liability, claims, and causes of action arising out of participation in swim lessons, whether caused by negligence or otherwise.<br><br>
+      <strong>3. Medical Authorization.</strong> I grant permission to seek emergency medical care for my child if needed during lessons.<br><br>
+      <strong>4. Photo &amp; Media.</strong> I grant permission for photos or videos of my child to be used for promotional purposes by Redding Swim Lessons unless I opt out below.<br><br>
+      <strong>5. Cancellation Policy.</strong> Cancellations must be made more than 14 days before the first lesson to be eligible for a refund. Cancellations with less than 2 weeks notice will not be refunded.<br><br>
+      I have read and fully understand this waiver and agree it is binding upon me, my heirs, and legal representatives.
+    </div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="w-agree">
+      <span><strong>I agree to the liability waiver</strong> above, including the cancellation and refund policy.</span>
+    </div>
+    <div class="checkbox-row" style="margin-top:8px;">
+      <input type="checkbox" id="w-nophoto">
+      <span>I do <strong>NOT</strong> consent to photos/videos of my child being used for promotional purposes.</span>
+    </div>
+    <label style="margin-top:18px;">Electronic Signature <span style="font-weight:400;font-size:.82rem;">(type your full name)</span></label>
+    <input type="text" class="sig-field" id="w-sig" placeholder="Your full name">
+    <div id="e-waiver" class="error hidden">Please check the agreement box and type your name.</div>
+  </div>
+
+  <!-- Step 6: Review & Pay -->
+  <div id="step6" class="card hidden">
+    <div class="section-title"><div class="num">6</div> Review &amp; Pay</div>
+    <div class="price-box">
+      <div class="price-row">
+        <div style="flex:1;">
+          <div class="price-label" id="sum-text">—</div>
+          <div class="price-breakdown" id="sum-breakdown"></div>
+        </div>
+        <div class="price-total" id="sum-total">$0</div>
+      </div>
+    </div>
+
+    <label>Card Details</label>
+    <div class="stripe-box" id="card-element"></div>
+    <div class="stripe-lock">
+      <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="6" width="10" height="7" rx="1.5" stroke="#5c6b7a" stroke-width="1.2"/><path d="M3.5 6V4a2.5 2.5 0 015 0v2" stroke="#5c6b7a" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Payments are secured and processed by Stripe. Your card info never touches our servers.
+    </div>
+    <div id="e-card" class="error hidden"></div>
+    <div id="e-submit" class="error hidden"></div>
+    <button class="btn-submit" id="btn-submit" onclick="submitForm()">Pay &amp; Register</button>
+    <p class="cancel-note">Need to cancel later? <span class="cancel-link" onclick="scrollToCancel()">See cancellation policy below.</span> Cancellations must be made <strong>more than 2 weeks</strong> before your first lesson for a refund.</p>
+  </div>
+
+  <div class="nav-btns" id="nav-btns">
+    <button class="btn-back hidden" id="btn-back" onclick="goBack()">← Back</button>
+    <button class="btn-next" id="btn-next" onclick="goNext()">Continue →</button>
+  </div>
+</div>
+
+<!-- SUCCESS -->
+<div id="success-screen" class="card success-screen hidden">
+  <div style="font-size:3rem;margin-bottom:12px;">🎉</div>
+  <h2>You're registered!</h2>
+  <p>Payment confirmed! Your spot is locked in. You'll receive a confirmation email once we process your registration.</p>
+  <div class="success-details" id="success-details"></div>
+  <p style="margin-top:16px;font-size:.85rem;">Questions? Call or text <a href="tel:5306382681" style="color:var(--blue)">(530) 638-2681</a> or email <a href="mailto:reddingswimlessons@gmail.com" style="color:var(--blue)">reddingswimlessons@gmail.com</a></p>
+</div>
+
+<!-- CANCEL SECTION -->
+<div id="cancel-section" style="margin-top:48px;">
+  <div class="card cancel-card">
+    <div class="section-title" style="color:#a01e11;">📋 Cancel a Registration</div>
+    <div class="alert-warning">⚠️ <strong>Refund Policy:</strong> Cancellations must be made <strong>more than 2 weeks before your first lesson</strong> to receive a refund. Refunds are issued back to your original card within 5–10 business days.</div>
+    <label>Your Email Address</label>
+    <input type="email" id="c-email" placeholder="Email used when registering">
+    <label>Child's Name</label>
+    <input type="text" id="c-kid" placeholder="Child's first and last name">
+    <label>Week You're Canceling</label>
+    <select id="c-week">
+      <option value="">-- Select week --</option>
+      <option>June 8</option><option>June 15</option><option>June 22</option>
+      <option>June 29</option><option>July 6</option><option>July 13</option><option>July 20</option>
+    </select>
+    <label>Reason <span style="font-weight:400;font-size:.82rem;">(optional)</span></label>
+    <textarea id="c-reason" rows="3" placeholder="Optional"></textarea>
+    <div id="c-msg" class="error hidden"></div>
+    <button class="btn-submit" style="margin-top:16px;" onclick="submitCancel()">Submit Cancellation Request</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyB8_QF10AabcRHPksOYHx-RnFEUeYubIVPXbwqFKi1N1vI25v6aWuSCeFmUf34l4ovCQ/exec';
+var STRIPE_PK = 'pk_live_51TJFcDFd1500vZE2ezliSneqVAMIhzugewyVyNEJxcqsHD3ADLBHSMcPKSFbIHeL7vVH8yE5z31wXsczbZIb9uDg002xdFrN5g';
+
+var stripe = Stripe(STRIPE_PK);
+var elements = stripe.elements();
+var cardElement = elements.create('card', {
+  style: {
+    base: { fontSize: '15px', color: '#1e2d3d', fontFamily: "'Segoe UI', Arial, sans-serif",
+      '::placeholder': { color: '#a0adb8' } },
+    invalid: { color: '#c0392b' }
+  }
+});
+
+var schedules = {
+  Sienna: {
+    weeks:['June 8','June 15','June 22','June 29','July 6','July 13','July 20'],
+    times:['9:00 AM','9:30 AM','10:00 AM','10:30 AM','11:30 AM','12:00 PM','12:30 PM','1:00 PM','1:30 PM']
+  },
+  Hailey: {
+    weeks:['June 8','June 15','June 22','June 29','July 6','July 13'],
+    times:['10:00 AM','10:30 AM','11:00 AM','11:30 AM','12:00 PM','12:30 PM','1:00 PM','1:30 PM','2:00 PM']
+  },
+  Madi: {
+    weeks:['June 8','June 15','June 22','June 29','July 6','July 13','July 20'],
+    times:['10:00 AM','10:30 AM','11:00 AM','11:30 AM','12:00 PM','12:30 PM','1:00 PM','1:30 PM','2:00 PM']
+  }
+};
+
+var levelNames = ['','Water Explorer','Paddler','Swimmer','Stroke Builder','Racer'];
+
+var state = {
+  instructor: null, weeks: [], weekTimes: {}, level: null, takenSlots: {}, step: 1
+};
+var TOTAL_STEPS = 6;
+var cardReady = false;
+
+function init() {
+  updateDots(); showCurrentStep(); loadSlots();
+}
+
+function showCurrentStep() {
+  for (var i = 1; i <= TOTAL_STEPS; i++) {
+    var el = document.getElementById('step' + i);
+    if (el) el.classList.toggle('hidden', i !== state.step);
+  }
+  document.getElementById('btn-back').classList.toggle('hidden', state.step === 1);
+  document.getElementById('btn-next').classList.toggle('hidden', state.step === TOTAL_STEPS);
+  document.getElementById('nav-btns').style.display = state.step === TOTAL_STEPS ? 'none' : 'flex';
+  updateDots();
+  if (state.step === TOTAL_STEPS) {
+    updateSummary();
+    if (!cardReady) {
+      cardElement.mount('#card-element');
+      cardElement.on('focus', function(){ document.getElementById('card-element').classList.add('focused'); });
+      cardElement.on('blur', function(){ document.getElementById('card-element').classList.remove('focused'); });
+      cardElement.on('change', function(e){ 
+        if (e.error) { document.getElementById('e-card').textContent = e.error.message; show('e-card'); }
+        else { hide('e-card'); }
+      });
+      cardReady = true;
+    }
+  }
+}
+
+function updateDots() {
+  for (var i = 1; i <= TOTAL_STEPS; i++) {
+    var d = document.getElementById('d' + i);
+    if (!d) continue;
+    d.className = 'dot' + (i < state.step ? ' done' : i === state.step ? ' active' : '');
+  }
+}
+
+function goNext() {
+  if (state.step === 1) {
+    if (!state.instructor) { show('e-instructor'); return; }
+    hide('e-instructor'); renderWeeks(); state.step = 2;
+  } else if (state.step === 2) {
+    if (state.weeks.length === 0) { show('e-week'); return; }
+    hide('e-week'); renderWeekTimeBlocks(); state.step = 3;
+  } else if (state.step === 3) {
+    var allPicked = true;
+    for (var i = 0; i < state.weeks.length; i++) {
+      if (!state.weekTimes[state.weeks[i]]) { allPicked = false; break; }
+    }
+    if (!allPicked) { show('e-time'); return; }
+    hide('e-time'); state.step = 4;
+  } else if (state.step === 4) {
+    if (!val('f-parent') || !val('f-phone') || !val('f-email') || !val('f-kid') || !val('f-age')) { show('e-fields'); return; }
+    hide('e-fields');
+    if (!state.level) { show('e-level'); return; }
+    hide('e-level'); state.step = 5;
+  } else if (state.step === 5) {
+    if (!document.getElementById('w-agree').checked || !val('w-sig')) { show('e-waiver'); return; }
+    hide('e-waiver'); state.step = 6;
+  }
+  showCurrentStep();
+}
+
+function goBack() { if (state.step > 1) { state.step--; showCurrentStep(); } }
+
+function pickInstructor(name) {
+  state.instructor = name; state.weeks = []; state.weekTimes = {};
+  ['Sienna','Hailey','Madi'].forEach(function(n) {
+    document.getElementById('ic-' + n).classList.toggle('selected', n === name);
+  });
+  hide('e-instructor');
+}
+
+function renderWeeks() {
+  var grid = document.getElementById('week-grid');
+  grid.innerHTML = '';
+  schedules[state.instructor].weeks.forEach(function(w) {
+    var taken = (state.takenSlots[state.instructor + '_' + w] || []).length;
+    var avail = schedules[state.instructor].times.length - taken;
+    var btn = document.createElement('button');
+    btn.className = 'week-btn' + (avail <= 0 ? ' full' : state.weeks.indexOf(w) > -1 ? ' selected' : '');
+    btn.innerHTML = 'Week of ' + w + '<span class="spots">' + (avail <= 0 ? 'Full' : avail + ' slot' + (avail !== 1 ? 's' : '') + ' left') + '</span>';
+    if (avail > 0) btn.onclick = (function(week, b){ return function(){ toggleWeek(week, b); }; })(w, btn);
+    grid.appendChild(btn);
+  });
+  renderTags();
+}
+
+function toggleWeek(week, btn) {
+  var idx = state.weeks.indexOf(week);
+  if (idx > -1) { state.weeks.splice(idx, 1); delete state.weekTimes[week]; btn.classList.remove('selected'); }
+  else { state.weeks.push(week); btn.classList.add('selected'); }
+  renderTags();
+}
+
+function renderTags() {
+  var c = document.getElementById('week-tags');
+  c.innerHTML = '';
+  state.weeks.forEach(function(w) {
+    var tag = document.createElement('div');
+    tag.className = 'week-tag';
+    tag.innerHTML = 'Week of ' + w + ' <span class="x" onclick="removeWeek(\'' + w + '\')">×</span>';
+    c.appendChild(tag);
+  });
+}
+
+function removeWeek(week) {
+  state.weeks = state.weeks.filter(function(w){ return w !== week; });
+  delete state.weekTimes[week];
+  renderWeeks();
+}
+
+function renderWeekTimeBlocks() {
+  var container = document.getElementById('week-time-blocks');
+  container.innerHTML = '';
+  var sched = schedules[state.instructor];
+  state.weeks.forEach(function(week) {
+    var block = document.createElement('div');
+    block.className = 'week-time-block';
+    var label = document.createElement('div');
+    label.className = 'wlabel';
+    label.textContent = '📅 Week of ' + week;
+    block.appendChild(label);
+    var grid = document.createElement('div');
+    grid.className = 'time-grid';
+    var takenTimes = state.takenSlots[state.instructor + '_' + week] || [];
+    sched.times.forEach(function(t) {
+      var btn = document.createElement('button');
+      btn.className = 'time-btn';
+      if (takenTimes.indexOf(t) > -1) {
+        btn.classList.add('taken'); btn.textContent = t + ' ✗';
+      } else {
+        if (state.weekTimes[week] === t) btn.classList.add('selected');
+        btn.textContent = t;
+        btn.onclick = (function(w, time, g) {
+          return function() {
+            state.weekTimes[w] = time;
+            g.querySelectorAll('.time-btn').forEach(function(b){ b.classList.remove('selected'); });
+            this.classList.add('selected');
+            hide('e-time');
+          };
+        })(week, t, grid);
+      }
+      grid.appendChild(btn);
+    });
+    block.appendChild(grid);
+    container.appendChild(block);
+  });
+}
+
+function pickLevel(n) {
+  state.level = n;
+  for (var i = 1; i <= 5; i++) {
+    var el = document.getElementById('lv' + i);
+    if (el) el.classList.toggle('selected', i === n);
+  }
+  hide('e-level');
+}
+
+function updateSummary() {
+  var weeks = state.weeks.length;
+  var total = weeks * 80;
+  document.getElementById('sum-text').textContent = state.instructor + ' · ' + val('f-kid') + ' · ' + weeks + ' week' + (weeks !== 1 ? 's' : '');
+  var lines = state.weeks.map(function(w){ return 'Week of ' + w + ' — ' + state.weekTimes[w]; }).join('\n');
+  lines += '\n\n$80 × ' + weeks + ' week' + (weeks !== 1 ? 's' : '') + ' = $' + total;
+  document.getElementById('sum-breakdown').textContent = lines;
+  document.getElementById('sum-total').textContent = '$' + total;
+}
+
+function submitForm() {
+  var btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+  btn.textContent = 'Processing...';
+  hide('e-submit');
+
+  var weeks = state.weeks.length;
+  var amountCents = weeks * 80 * 100;
+  var weekTimeSummary = state.weeks.map(function(w){ return 'Week of ' + w + ': ' + state.weekTimes[w]; }).join(' | ');
+
+  var payload = {
+    action: 'register',
+    instructor: state.instructor,
+    weeks: state.weeks.join(', '),
+    weekTimeSummary: weekTimeSummary,
+    time: state.weeks.map(function(w){ return state.weekTimes[w]; }).join(', '),
+    parentName: val('f-parent'),
+    phone: val('f-phone'),
+    email: val('f-email'),
+    kidName: val('f-kid'),
+    kidAge: val('f-age'),
+    medical: val('f-medical'),
+    level: state.level + ' - ' + levelNames[state.level],
+    signature: val('w-sig'),
+    noPhoto: document.getElementById('w-nophoto').checked ? 'No photo consent' : 'Photo consent given',
+    timestamp: new Date().toLocaleString(),
+    total: '$' + (weeks * 80),
+    amountCents: amountCents
+  };
+
+  // Step 1: Check for slot conflicts + create Stripe payment intent via Apps Script
+  fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) })
+    .then(function(r){ return r.json(); })
+    .then(function(data) {
+      if (data.conflict) {
+        document.getElementById('e-submit').textContent = data.message;
+        show('e-submit');
+        btn.disabled = false; btn.textContent = 'Pay & Register';
+        return;
+      }
+      if (!data.clientSecret) {
+        document.getElementById('e-submit').textContent = 'Payment setup failed. Please try again or contact us.';
+        show('e-submit');
+        btn.disabled = false; btn.textContent = 'Pay & Register';
+        return;
+      }
+      // Step 2: Confirm card payment with Stripe
+      stripe.confirmCardPayment(data.clientSecret, {
+        payment_method: {
+          card: cardElement,
+          billing_details: { name: val('f-parent'), email: val('f-email') }
+        }
+      }).then(function(result) {
+        if (result.error) {
+          document.getElementById('e-submit').textContent = result.error.message;
+          show('e-submit');
+          btn.disabled = false; btn.textContent = 'Pay & Register';
+        } else if (result.paymentIntent.status === 'succeeded') {
+          // Step 3: Confirm payment success to Apps Script so it saves the registration
+          payload.action = 'confirmPayment';
+          payload.paymentIntentId = result.paymentIntent.id;
+          fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) })
+            .then(function(){ showSuccess(payload); })
+            .catch(function(){ showSuccess(payload); });
+        }
+      });
+    })
+    .catch(function(err) {
+      document.getElementById('e-submit').textContent = 'Connection error. Please check your internet and try again.';
+      show('e-submit');
+      btn.disabled = false; btn.textContent = 'Pay & Register';
+    });
+}
+
+function showSuccess(p) {
+  document.getElementById('main-form').classList.add('hidden');
+  document.getElementById('success-screen').classList.remove('hidden');
+  var weekLines = state.weeks.map(function(w){ return 'Week of ' + w + ' at ' + state.weekTimes[w]; }).join('<br>');
+  document.getElementById('success-details').innerHTML =
+    '<strong>Instructor:</strong> ' + p.instructor + '<br>' +
+    '<strong>Child:</strong> ' + p.kidName + ', age ' + p.kidAge + '<br>' +
+    weekLines + '<br>' +
+    '<strong>Total Paid:</strong> ' + p.total;
+}
+
+function submitCancel() {
+  var email = val('c-email'), kid = val('c-kid'), week = document.getElementById('c-week').value;
+  var msg = document.getElementById('c-msg');
+  if (!email || !kid || !week) { msg.textContent = 'Please fill in all required fields.'; msg.style.color='var(--red)'; show('c-msg'); return; }
+  fetch(SCRIPT_URL, { method:'POST', body:JSON.stringify({ action:'cancel', email:email, childName:kid, week:week, reason:val('c-reason'), timestamp:new Date().toLocaleString() })}).catch(function(){});
+  msg.textContent = 'Cancellation request submitted! We will contact you at ' + email + ' within 1–2 business days. If eligible, your refund will be returned to your original card within 5–10 business days.';
+  msg.style.color = 'var(--teal)';
+  show('c-msg');
+}
+
+function loadSlots() {
+  fetch(SCRIPT_URL + '?action=getSlots')
+    .then(function(r){ return r.json(); })
+    .then(function(data){ state.takenSlots = data || {}; })
+    .catch(function(){});
+}
+
+function scrollToCancel() { document.getElementById('cancel-section').scrollIntoView({behavior:'smooth'}); }
+function val(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+function show(id) { document.getElementById(id).classList.remove('hidden'); }
+function hide(id) { document.getElementById(id).classList.add('hidden'); }
+
+init();
+</script>
+</body>
+</html>
