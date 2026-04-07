@@ -513,9 +513,7 @@ function submitForm() {
   // Step 1: Check for slot conflicts + create Stripe payment intent via Apps Script
   fetch(SCRIPT_URL, {
   method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
+  headers: { 'Content-Type': 'text/plain' },  // ← change this
   body: JSON.stringify(payload)
 })
     .then(function(r){ return r.json(); })
@@ -549,9 +547,7 @@ function submitForm() {
           payload.paymentIntentId = result.paymentIntent.id;
           fetch(SCRIPT_URL, {
   method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
+  headers: { 'Content-Type': 'text/plain' },  // ← change this
   body: JSON.stringify(payload)
 })
             .then(function(){ showSuccess(payload); })
@@ -584,7 +580,7 @@ function submitCancel() {
   fetch(SCRIPT_URL, {
   method: 'POST',
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'text/plain'
   },
   body: JSON.stringify({
     action:'cancel',
