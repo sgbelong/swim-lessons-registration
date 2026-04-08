@@ -5,90 +5,94 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Register – Redding Swim Lessons</title>
 <script src="https://js.stripe.com/v3/"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Lato:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --blue:#2a7fc1; --blue-light:#e8f4fd; --blue-mid:#c5dff4; --blue-dark:#1a5a8a;
   --teal:#3aab8c; --teal-light:#e6f7f3;
-  --white:#fff; --gray-bg:#f7f9fc; --gray-border:#dde4ed; --gray-text:#5c6b7a;
+  --white:#fff; --gray-bg:#f0f5fb; --gray-border:#dde4ed; --gray-text:#5c6b7a;
   --text:#1e2d3d; --red:#c0392b; --red-light:#fdf0ee;
-  --shadow:0 2px 12px rgba(42,127,193,.10); --radius:10px; --radius-sm:6px;
+  --shadow:0 4px 18px rgba(42,127,193,.13); --radius:12px; --radius-sm:7px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Segoe UI',Arial,sans-serif;background:var(--gray-bg);color:var(--text);min-height:100vh;padding:24px 16px 48px;}
-.container{max-width:700px;margin:0 auto;}
-h1{font-size:1.7rem;font-weight:700;color:var(--blue-dark);text-align:center;margin-bottom:4px;}
-.subtitle{text-align:center;color:var(--gray-text);font-size:.97rem;margin-bottom:12px;}
+body{font-family:'Lato',sans-serif;background:var(--gray-bg);color:var(--text);min-height:100vh;padding:28px 16px 56px;}
+body::before{content:'';position:fixed;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--blue),var(--teal));z-index:100;}
+.container{max-width:680px;margin:0 auto;}
+h1{font-family:'Nunito',sans-serif;font-size:1.8rem;font-weight:900;color:var(--blue-dark);text-align:center;margin-bottom:4px;}
+.subtitle{text-align:center;color:var(--gray-text);font-size:.97rem;margin-bottom:14px;}
 .notice{background:#fff8e1;border:1px solid #ffe082;color:#7a5c00;padding:12px 16px;border-radius:var(--radius-sm);font-size:.9rem;margin-bottom:24px;text-align:center;}
 .card{background:var(--white);border-radius:var(--radius);border:1px solid var(--gray-border);box-shadow:var(--shadow);padding:28px;margin-bottom:20px;}
-.section-title{font-size:1.08rem;font-weight:700;color:var(--blue-dark);margin-bottom:18px;display:flex;align-items:center;gap:8px;}
-.num{width:26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-label{display:block;font-size:.88rem;font-weight:600;color:var(--gray-text);margin-bottom:5px;margin-top:14px;}
-input[type=text],input[type=email],input[type=tel],input[type=number],select,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--gray-border);border-radius:var(--radius-sm);font-size:.95rem;font-family:inherit;color:var(--text);background:var(--white);outline:none;}
+.section-title{font-family:'Nunito',sans-serif;font-size:1.1rem;font-weight:800;color:var(--blue-dark);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+.num{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--teal));color:#fff;font-size:.82rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Nunito',sans-serif;}
+label{display:block;font-size:.85rem;font-weight:700;color:var(--gray-text);margin-bottom:5px;margin-top:14px;text-transform:uppercase;letter-spacing:.04em;}
+input[type=text],input[type=email],input[type=tel],input[type=number],select,textarea{width:100%;padding:11px 13px;border:1.5px solid var(--gray-border);border-radius:var(--radius-sm);font-size:.95rem;font-family:'Lato',sans-serif;color:var(--text);background:var(--white);outline:none;transition:border-color .15s,box-shadow .15s;}
 input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(42,127,193,.12);}
 .instructor-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:4px;}
-.instructor-card{border:2px solid var(--gray-border);border-radius:var(--radius);padding:14px 10px 12px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;user-select:none;}
-.instructor-card:hover,.instructor-card.selected{border-color:var(--blue);background:var(--blue-light);}
-.instructor-card .icon{font-size:1.8rem;margin-bottom:6px;}
-.instructor-card .name{font-weight:700;font-size:.95rem;color:var(--blue-dark);}
-.instructor-card .loc{font-size:.78rem;color:var(--gray-text);margin-top:2px;}
+.instructor-card{border:2px solid var(--gray-border);border-radius:var(--radius);padding:16px 10px 14px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s,transform .12s;user-select:none;}
+.instructor-card:hover{transform:translateY(-2px);border-color:var(--blue);background:var(--blue-light);}
+.instructor-card.selected{border-color:var(--blue);background:var(--blue-light);transform:translateY(-2px);}
+.instructor-card .icon{font-size:2rem;margin-bottom:8px;}
+.instructor-card .name{font-family:'Nunito',sans-serif;font-weight:800;font-size:.98rem;color:var(--blue-dark);}
+.instructor-card .loc{font-size:.76rem;color:var(--gray-text);margin-top:3px;}
 .week-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:4px;}
-.week-btn{border:2px solid var(--gray-border);border-radius:var(--radius-sm);padding:10px 8px;text-align:center;cursor:pointer;background:var(--white);font-family:inherit;font-size:.88rem;font-weight:600;color:var(--text);}
+.week-btn{border:2px solid var(--gray-border);border-radius:var(--radius-sm);padding:11px 8px;text-align:center;cursor:pointer;background:var(--white);font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:700;color:var(--text);transition:all .14s;}
 .week-btn:hover:not(.full){border-color:var(--blue);background:var(--blue-light);}
 .week-btn.selected{border-color:var(--blue);background:var(--blue);color:#fff;}
 .week-btn.full{background:#f0f0f0;color:#aaa;cursor:not-allowed;border-color:#e0e0e0;text-decoration:line-through;}
-.week-btn .spots{font-size:.73rem;font-weight:400;display:block;margin-top:3px;}
+.week-btn .spots{font-size:.72rem;font-weight:400;display:block;margin-top:3px;font-family:'Lato',sans-serif;}
 .week-btn.selected .spots{color:rgba(255,255,255,.85);}
 .week-time-block{border:1.5px solid var(--gray-border);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px;}
-.week-time-block .wlabel{font-weight:700;font-size:.9rem;color:var(--blue-dark);margin-bottom:10px;}
+.week-time-block .wlabel{font-family:'Nunito',sans-serif;font-weight:800;font-size:.92rem;color:var(--blue-dark);margin-bottom:10px;}
 .time-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:7px;}
-.time-btn{border:2px solid var(--gray-border);border-radius:var(--radius-sm);padding:8px 4px;text-align:center;cursor:pointer;background:var(--white);font-family:inherit;font-size:.82rem;font-weight:600;color:var(--text);}
+.time-btn{border:2px solid var(--gray-border);border-radius:var(--radius-sm);padding:8px 4px;text-align:center;cursor:pointer;background:var(--white);font-family:'Lato',sans-serif;font-size:.82rem;font-weight:700;color:var(--text);transition:all .14s;}
 .time-btn:hover:not(.taken){border-color:var(--teal);background:var(--teal-light);}
 .time-btn.selected{border-color:var(--teal);background:var(--teal);color:#fff;}
 .time-btn.taken{background:#f0f0f0;color:#bbb;cursor:not-allowed;border-color:#e8e8e8;font-size:.78rem;}
-.level-list{display:flex;flex-direction:column;gap:7px;}
-.level-item{display:flex;align-items:flex-start;gap:10px;border:2px solid var(--gray-border);border-radius:var(--radius-sm);padding:9px 12px;cursor:pointer;background:var(--white);}
+.level-list{display:flex;flex-direction:column;gap:8px;}
+.level-item{display:flex;align-items:flex-start;gap:10px;border:2px solid var(--gray-border);border-radius:var(--radius-sm);padding:10px 13px;cursor:pointer;background:var(--white);transition:all .14s;}
 .level-item:hover,.level-item.selected{border-color:var(--blue);background:var(--blue-light);}
-.level-num{width:24px;height:24px;border-radius:50%;background:var(--blue-mid);color:var(--blue-dark);font-weight:700;font-size:.82rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.level-num{width:24px;height:24px;border-radius:50%;background:var(--blue-mid);color:var(--blue-dark);font-weight:800;font-size:.82rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-family:'Nunito',sans-serif;}
 .level-item.selected .level-num{background:var(--blue);color:#fff;}
-.level-name{font-weight:700;font-size:.9rem;}
+.level-name{font-family:'Nunito',sans-serif;font-weight:800;font-size:.92rem;}
 .level-desc{font-size:.8rem;color:var(--gray-text);margin-top:2px;}
 .waiver-box{max-height:160px;overflow-y:auto;border:1.5px solid var(--gray-border);border-radius:var(--radius-sm);padding:12px 14px;font-size:.83rem;line-height:1.6;color:var(--gray-text);background:var(--gray-bg);margin-bottom:12px;}
 .checkbox-row{display:flex;align-items:flex-start;gap:10px;margin-top:10px;}
 .checkbox-row input[type=checkbox]{width:18px;height:18px;flex-shrink:0;margin-top:1px;accent-color:var(--blue);}
 .checkbox-row span{font-size:.87rem;line-height:1.5;}
 .sig-field{border:1.5px solid var(--gray-border);border-radius:var(--radius-sm);padding:10px 12px;font-family:'Georgia',serif;font-size:1.15rem;font-style:italic;width:100%;color:var(--blue-dark);margin-top:8px;background:#fffdf5;}
-.price-box{background:var(--blue-light);border:1.5px solid var(--blue-mid);border-radius:var(--radius);padding:16px 18px;margin-bottom:20px;}
+.price-box{background:linear-gradient(135deg,var(--blue-light),#f0faf7);border:1.5px solid var(--blue-mid);border-radius:var(--radius);padding:18px 20px;margin-bottom:20px;}
 .price-row{display:flex;justify-content:space-between;align-items:center;}
-.price-label{font-size:.92rem;color:var(--blue-dark);}
-.price-total{font-size:1.3rem;font-weight:800;color:var(--blue-dark);}
-.price-breakdown{font-size:.82rem;color:var(--blue-dark);margin-top:6px;line-height:1.8;white-space:pre-line;}
-/* Stripe card element */
-.stripe-box{border:1.5px solid var(--gray-border);border-radius:var(--radius-sm);padding:12px 14px;background:var(--white);margin-top:6px;}
+.price-label{font-size:.93rem;color:var(--blue-dark);font-weight:600;}
+.price-total{font-family:'Nunito',sans-serif;font-size:1.5rem;font-weight:900;color:var(--blue-dark);}
+.price-breakdown{font-size:.82rem;color:var(--blue-dark);margin-top:8px;line-height:1.9;white-space:pre-line;}
+.stripe-box{border:1.5px solid var(--gray-border);border-radius:var(--radius-sm);padding:13px 15px;background:var(--white);margin-top:6px;transition:border-color .15s,box-shadow .15s;}
 .stripe-box.focused{border-color:var(--blue);box-shadow:0 0 0 3px rgba(42,127,193,.12);}
 .stripe-lock{display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--gray-text);margin-top:8px;}
 .stripe-lock svg{flex-shrink:0;}
-.btn-submit{width:100%;padding:15px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-size:1.07rem;font-weight:700;cursor:pointer;margin-top:20px;}
-.btn-submit:hover{background:var(--blue-dark);}
-.btn-submit:disabled{background:#b0c8e0;cursor:not-allowed;}
+.btn-submit{width:100%;padding:15px;background:linear-gradient(135deg,var(--blue),#1e90c8);color:#fff;border:none;border-radius:var(--radius);font-family:'Nunito',sans-serif;font-size:1.1rem;font-weight:800;cursor:pointer;margin-top:20px;transition:opacity .15s,transform .12s;letter-spacing:.02em;}
+.btn-submit:hover{opacity:.92;transform:translateY(-1px);}
+.btn-submit:disabled{background:#b0c8e0;cursor:not-allowed;transform:none;}
 .error{color:var(--red);font-size:.83rem;margin-top:6px;}
 .hidden{display:none!important;}
 .alert-info{background:var(--blue-light);border:1px solid var(--blue-mid);color:var(--blue-dark);padding:10px 14px;border-radius:var(--radius-sm);font-size:.88rem;margin-bottom:12px;}
 .alert-warning{background:#fff8e1;border:1px solid #ffe082;color:#7a5c00;padding:10px 14px;border-radius:var(--radius-sm);font-size:.88rem;margin-bottom:12px;}
-.step-dots{display:flex;justify-content:center;gap:8px;margin-bottom:24px;}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--gray-border);}
-.dot.active{background:var(--blue);}
+.step-dots{display:flex;justify-content:center;gap:8px;margin-bottom:26px;}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--gray-border);transition:background .2s,transform .2s;}
+.dot.active{background:var(--blue);transform:scale(1.3);}
 .dot.done{background:var(--teal);}
 .week-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
-.week-tag{background:var(--blue);color:#fff;border-radius:20px;padding:4px 12px;font-size:.82rem;font-weight:600;display:flex;align-items:center;gap:6px;}
+.week-tag{background:var(--blue);color:#fff;border-radius:20px;padding:4px 12px;font-size:.82rem;font-weight:700;display:flex;align-items:center;gap:6px;font-family:'Nunito',sans-serif;}
 .week-tag .x{cursor:pointer;font-size:1rem;opacity:.8;}
 .week-tag .x:hover{opacity:1;}
 .nav-btns{display:flex;justify-content:center;gap:12px;margin-top:8px;}
-.btn-back{padding:10px 24px;border:1.5px solid var(--gray-border);border-radius:var(--radius-sm);background:#fff;cursor:pointer;font-size:.93rem;font-weight:600;}
-.btn-next{padding:10px 28px;border:none;border-radius:var(--radius-sm);background:var(--blue);color:#fff;cursor:pointer;font-size:.93rem;font-weight:700;}
-.success-screen{text-align:center;padding:40px 20px;}
-.success-screen h2{color:var(--teal);font-size:1.5rem;margin-bottom:10px;}
+.btn-back{padding:10px 24px;border:1.5px solid var(--gray-border);border-radius:var(--radius-sm);background:#fff;cursor:pointer;font-size:.93rem;font-weight:700;font-family:'Nunito',sans-serif;transition:border-color .14s;}
+.btn-back:hover{border-color:var(--blue);}
+.btn-next{padding:10px 32px;border:none;border-radius:var(--radius-sm);background:linear-gradient(135deg,var(--blue),#1e90c8);color:#fff;cursor:pointer;font-size:.95rem;font-weight:800;font-family:'Nunito',sans-serif;transition:opacity .14s,transform .12s;}
+.btn-next:hover{opacity:.92;transform:translateY(-1px);}
+.success-screen{text-align:center;padding:44px 20px;}
+.success-screen h2{font-family:'Nunito',sans-serif;color:var(--teal);font-size:1.6rem;font-weight:900;margin-bottom:10px;}
 .success-screen p{color:var(--gray-text);font-size:.95rem;line-height:1.6;max-width:460px;margin:0 auto 16px;}
-.success-details{background:var(--blue-light);border-radius:var(--radius-sm);padding:14px 16px;font-size:.9rem;color:var(--blue-dark);text-align:left;line-height:1.8;}
+.success-details{background:var(--blue-light);border-radius:var(--radius-sm);padding:16px 18px;font-size:.9rem;color:var(--blue-dark);text-align:left;line-height:1.9;}
 .cancel-note{font-size:.82rem;color:var(--gray-text);text-align:center;margin-top:12px;line-height:1.5;}
 .cancel-link{color:var(--blue);text-decoration:underline;cursor:pointer;}
 .cancel-card{border:1.5px solid #f0b9b3;background:#fffbfb;}
@@ -138,7 +142,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 
   <!-- Step 3: Time per week -->
   <div id="step3" class="card hidden">
     <div class="section-title"><div class="num">3</div> Choose a Time Slot</div>
-    <p style="font-size:.88rem;color:var(--gray-text);margin-bottom:16px;">Pick a time for each week. You can choose different times for different weeks. Lessons are 30 minutes, Mon–Thu.</p>
+    <p style="font-size:.88rem;color:var(--gray-text);margin-bottom:16px;">Pick a time for each week. Lessons are 30 minutes, Mon–Thu.</p>
     <div id="week-time-blocks"></div>
     <div id="e-time" class="error hidden">Please choose a time for every selected week.</div>
   </div>
@@ -156,7 +160,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 
     <input type="text" id="f-kid" placeholder="First and last name">
     <label>Child's Age</label>
     <input type="number" id="f-age" placeholder="e.g. 6" min="3" max="16">
-    <label>Medical conditions, allergies, or fears? <span style="font-weight:400;font-size:.82rem;">(optional)</span></label>
+    <label>Medical conditions, allergies, or fears? <span style="font-weight:400;font-size:.82rem;text-transform:none;">(optional)</span></label>
     <textarea id="f-medical" rows="2" placeholder="e.g. ear tubes, fear of water"></textarea>
     <label style="margin-top:18px;">Swimming Level</label>
     <div class="level-list">
@@ -206,7 +210,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 
       <input type="checkbox" id="w-nophoto">
       <span>I do <strong>NOT</strong> consent to photos/videos of my child being used for promotional purposes.</span>
     </div>
-    <label style="margin-top:18px;">Electronic Signature <span style="font-weight:400;font-size:.82rem;">(type your full name)</span></label>
+    <label style="margin-top:18px;">Electronic Signature <span style="font-weight:400;font-size:.82rem;text-transform:none;">(type your full name)</span></label>
     <input type="text" class="sig-field" id="w-sig" placeholder="Your full name">
     <div id="e-waiver" class="error hidden">Please check the agreement box and type your name.</div>
   </div>
@@ -223,7 +227,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 
         <div class="price-total" id="sum-total">$0</div>
       </div>
     </div>
-
     <label>Card Details</label>
     <div class="stripe-box" id="card-element"></div>
     <div class="stripe-lock">
@@ -244,15 +247,15 @@ input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 
 
 <!-- SUCCESS -->
 <div id="success-screen" class="card success-screen hidden">
-  <div style="font-size:3rem;margin-bottom:12px;">🎉</div>
+  <div style="font-size:3.5rem;margin-bottom:14px;">🎉</div>
   <h2>You're registered!</h2>
   <p>Payment confirmed! Your spot is locked in. You'll receive a confirmation email once we process your registration.</p>
   <div class="success-details" id="success-details"></div>
-  <p style="margin-top:16px;font-size:.85rem;">Questions? Call or text <a href="tel:5306382681" style="color:var(--blue)">(530) 638-2681</a> or email <a href="mailto:reddingswimlessons@gmail.com" style="color:var(--blue)">reddingswimlessons@gmail.com</a></p>
+  <p style="margin-top:18px;font-size:.85rem;">Questions? Call or text <a href="tel:5306382681" style="color:var(--blue)">(530) 638-2681</a> or email <a href="mailto:reddingswimlessons@gmail.com" style="color:var(--blue)">reddingswimlessons@gmail.com</a></p>
 </div>
 
 <!-- CANCEL SECTION -->
-<div id="cancel-section" style="margin-top:48px;">
+<div id="cancel-section" style="margin-top:52px;">
   <div class="card cancel-card">
     <div class="section-title" style="color:#a01e11;">📋 Cancel a Registration</div>
     <div class="alert-warning">⚠️ <strong>Refund Policy:</strong> Cancellations must be made <strong>more than 2 weeks before your first lesson</strong> to receive a refund. Refunds are issued back to your original card within 5–10 business days.</div>
@@ -266,14 +269,14 @@ input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 
       <option>June 8</option><option>June 15</option><option>June 22</option>
       <option>June 29</option><option>July 6</option><option>July 13</option><option>July 20</option>
     </select>
-    <label>Reason <span style="font-weight:400;font-size:.82rem;">(optional)</span></label>
+    <label>Reason <span style="font-weight:400;font-size:.82rem;text-transform:none;">(optional)</span></label>
     <textarea id="c-reason" rows="3" placeholder="Optional"></textarea>
     <div id="c-msg" class="error hidden"></div>
     <button class="btn-submit" style="margin-top:16px;" onclick="submitCancel()">Submit Cancellation Request</button>
   </div>
 </div>
 
-</div>
+</div><!-- end .container -->
 
 <script>
 var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxxVwagfcyPdpY8C6TG7iOF6LjPO1ApuyEJ0eEsvnVQVDfHDqoIobQ8Lx3uAKneLQKh7A/exec';
@@ -283,7 +286,7 @@ var stripe = Stripe(STRIPE_PK);
 var elements = stripe.elements();
 var cardElement = elements.create('card', {
   style: {
-    base: { fontSize: '15px', color: '#1e2d3d', fontFamily: "'Segoe UI', Arial, sans-serif",
+    base: { fontSize: '15px', color: '#1e2d3d', fontFamily: "'Lato', Arial, sans-serif",
       '::placeholder': { color: '#a0adb8' } },
     invalid: { color: '#c0392b' }
   }
@@ -305,16 +308,27 @@ var schedules = {
 };
 
 var levelNames = ['','Water Explorer','Paddler','Swimmer','Stroke Builder','Racer'];
-
-var state = {
-  instructor: null, weeks: [], weekTimes: {}, level: null, takenSlots: {}, step: 1
-};
+var state = { instructor: null, weeks: [], weekTimes: {}, level: null, takenSlots: {}, step: 1 };
 var TOTAL_STEPS = 6;
 var cardReady = false;
 
-function init() {
-  updateDots(); showCurrentStep(); loadSlots();
+function callScript(payload) {
+  return new Promise(function(resolve, reject) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', SCRIPT_URL, true);
+    xhr.setRequestHeader('Content-Type', 'text/plain');
+    xhr.onload = function() {
+      try { resolve(JSON.parse(xhr.responseText)); }
+      catch(e) { reject(new Error('Bad response: ' + xhr.responseText.substring(0, 200))); }
+    };
+    xhr.onerror = function() { reject(new Error('Network error')); };
+    xhr.ontimeout = function() { reject(new Error('Request timed out')); };
+    xhr.timeout = 30000;
+    xhr.send(JSON.stringify(payload));
+  });
 }
+
+function init() { updateDots(); showCurrentStep(); loadSlots(); }
 
 function showCurrentStep() {
   for (var i = 1; i <= TOTAL_STEPS; i++) {
@@ -331,7 +345,7 @@ function showCurrentStep() {
       cardElement.mount('#card-element');
       cardElement.on('focus', function(){ document.getElementById('card-element').classList.add('focused'); });
       cardElement.on('blur', function(){ document.getElementById('card-element').classList.remove('focused'); });
-      cardElement.on('change', function(e){ 
+      cardElement.on('change', function(e){
         if (e.error) { document.getElementById('e-card').textContent = e.error.message; show('e-card'); }
         else { hide('e-card'); }
       });
@@ -510,61 +524,44 @@ function submitForm() {
     amountCents: amountCents
   };
 
-  // Step 1: Check for slot conflicts + create Stripe payment intent via Apps Script
-  fetch(SCRIPT_URL, {
-  method: 'POST',
-  headers: { 'Content-Type': 'text/plain' },  // ← change this
-  body: JSON.stringify(payload)
-})
-    .then(function(r){ return r.json(); })
-    .then(function(r){ return r.text(); })
-.then(function(rawText) {
-  alert('RAW RESPONSE: ' + rawText);
-  var data;
-  try { data = JSON.parse(rawText); } 
-  catch(e) { alert('JSON PARSE FAILED: ' + rawText); return; }
-  
-  if (data.conflict) {
-    document.getElementById('e-submit').textContent = data.message;
-    show('e-submit');
-    btn.disabled = false; btn.textContent = 'Pay & Register';
-    return;
-  }
-  if (!data.clientSecret) {
-    document.getElementById('e-submit').textContent = data.message || 'No clientSecret returned';
-    show('e-submit');
-    btn.disabled = false; btn.textContent = 'Pay & Register';
-    return;
-  }
-  stripe.confirmCardPayment(data.clientSecret, {
-    payment_method: {
-      card: cardElement,
-      billing_details: { name: val('f-parent'), email: val('f-email') }
-    }
-  }).then(function(result) {
-    if (result.error) {
-      document.getElementById('e-submit').textContent = result.error.message;
+  callScript(payload)
+    .then(function(data) {
+      if (data.conflict) {
+        document.getElementById('e-submit').textContent = data.message;
+        show('e-submit');
+        btn.disabled = false; btn.textContent = 'Pay & Register';
+        return;
+      }
+      if (!data.clientSecret) {
+        document.getElementById('e-submit').textContent = data.message || 'Payment setup failed. Please try again or contact us.';
+        show('e-submit');
+        btn.disabled = false; btn.textContent = 'Pay & Register';
+        return;
+      }
+      stripe.confirmCardPayment(data.clientSecret, {
+        payment_method: {
+          card: cardElement,
+          billing_details: { name: val('f-parent'), email: val('f-email') }
+        }
+      }).then(function(result) {
+        if (result.error) {
+          document.getElementById('e-submit').textContent = result.error.message;
+          show('e-submit');
+          btn.disabled = false; btn.textContent = 'Pay & Register';
+        } else if (result.paymentIntent.status === 'succeeded') {
+          payload.action = 'confirmPayment';
+          payload.paymentIntentId = result.paymentIntent.id;
+          callScript(payload)
+            .then(function(){ showSuccess(payload); })
+            .catch(function(){ showSuccess(payload); });
+        }
+      });
+    })
+    .catch(function(err) {
+      document.getElementById('e-submit').textContent = 'Error: ' + err.message;
       show('e-submit');
       btn.disabled = false; btn.textContent = 'Pay & Register';
-    } else if (result.paymentIntent.status === 'succeeded') {
-      payload.action = 'confirmPayment';
-      payload.paymentIntentId = result.paymentIntent.id;
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        headers: {'Content-Type': 'text/plain'},
-        body: JSON.stringify(payload)
-      })
-      .then(function(){ showSuccess(payload); })
-      .catch(function(){ showSuccess(payload); });
-    }
-  });
-})
-.catch(function(err) {
-  alert('FETCH ERROR: ' + err.message);
-  document.getElementById('e-submit').textContent = 'Connection error: ' + err.message;
-  show('e-submit');
-  btn.disabled = false; btn.textContent = 'Pay & Register';
-});
+    });
 }
 
 function showSuccess(p) {
@@ -582,30 +579,22 @@ function submitCancel() {
   var email = val('c-email'), kid = val('c-kid'), week = document.getElementById('c-week').value;
   var msg = document.getElementById('c-msg');
   if (!email || !kid || !week) { msg.textContent = 'Please fill in all required fields.'; msg.style.color='var(--red)'; show('c-msg'); return; }
-  fetch(SCRIPT_URL, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'text/plain'
-  },
-  body: JSON.stringify({
-    action:'cancel',
-    email:email,
-    childName:kid,
-    week:week,
-    reason:val('c-reason'),
-    timestamp:new Date().toLocaleString()
-  })
-}).catch(function(){});
-  msg.textContent = 'Cancellation request submitted! We will contact you at ' + email + ' within 1–2 business days. If eligible, your refund will be returned to your original card within 5–10 business days.';
+  callScript({ action:'cancel', email:email, childName:kid, week:week, reason:val('c-reason'), timestamp:new Date().toLocaleString() })
+    .catch(function(){});
+  msg.textContent = 'Cancellation request submitted! We will contact you at ' + email + ' within 1–2 business days.';
   msg.style.color = 'var(--teal)';
   show('c-msg');
 }
 
 function loadSlots() {
-  fetch(SCRIPT_URL + '?action=getSlots')
-    .then(function(r){ return r.json(); })
-    .then(function(data){ state.takenSlots = data || {}; })
-    .catch(function(){});
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', SCRIPT_URL + '?action=getSlots', true);
+  xhr.onload = function() {
+    try { state.takenSlots = JSON.parse(xhr.responseText) || {}; }
+    catch(e) { state.takenSlots = {}; }
+  };
+  xhr.onerror = function() { state.takenSlots = {}; };
+  xhr.send();
 }
 
 function scrollToCancel() { document.getElementById('cancel-section').scrollIntoView({behavior:'smooth'}); }
