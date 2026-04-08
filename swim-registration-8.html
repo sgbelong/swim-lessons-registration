@@ -517,49 +517,54 @@ function submitForm() {
   body: JSON.stringify(payload)
 })
     .then(function(r){ return r.json(); })
-    .then(function(data) {
-      if (data.conflict) {
-        document.getElementById('e-submit').textContent = data.message;
-        show('e-submit');
-        btn.disabled = false; btn.textContent = 'Pay & Register';
-        return;
-      }
-      if (!data.clientSecret) {
-        document.getElementById('e-submit').textContent = 'Payment setup failed. Please try again or contact us.';
-        show('e-submit');
-        btn.disabled = false; btn.textContent = 'Pay & Register';
-        return;
-      }
-      // Step 2: Confirm card payment with Stripe
-      stripe.confirmCardPayment(data.clientSecret, {
-        payment_method: {
-          card: cardElement,
-          billing_details: { name: val('f-parent'), email: val('f-email') }
-        }
-      }).then(function(result) {
-        if (result.error) {
-          document.getElementById('e-submit').textContent = result.error.message;
-          show('e-submit');
-          btn.disabled = false; btn.textContent = 'Pay & Register';
-        } else if (result.paymentIntent.status === 'succeeded') {
-          // Step 3: Confirm payment success to Apps Script so it saves the registration
-          payload.action = 'confirmPayment';
-          payload.paymentIntentId = result.paymentIntent.id;
-          fetch(SCRIPT_URL, {
-  method: 'POST',
-  headers: { 'Content-Type': 'text/plain' },  // ← change this
-  body: JSON.stringify(payload)
-})
-            .then(function(){ showSuccess(payload); })
-            .catch(function(){ showSuccess(payload); });
-        }
-      });
-    })
-    .catch(function(err) {
-      document.getElementById('e-submit').textContent = 'Connection error. Please check your internet and try again.';
+    .then(function(r){ return r.text(); })
+.then(function(rawText) {
+  alert('RAW RESPONSE: ' + rawText);
+  var data;
+  try { data = JSON.parse(rawText); } 
+  catch(e) { alert('JSON PARSE FAILED: ' + rawText); return; }
+  
+  if (data.conflict) {
+    document.getElementById('e-submit').textContent = data.message;
+    show('e-submit');
+    btn.disabled = false; btn.textContent = 'Pay & Register';
+    return;
+  }
+  if (!data.clientSecret) {
+    document.getElementById('e-submit').textContent = data.message || 'No clientSecret returned';
+    show('e-submit');
+    btn.disabled = false; btn.textContent = 'Pay & Register';
+    return;
+  }
+  stripe.confirmCardPayment(data.clientSecret, {
+    payment_method: {
+      card: cardElement,
+      billing_details: { name: val('f-parent'), email: val('f-email') }
+    }
+  }).then(function(result) {
+    if (result.error) {
+      document.getElementById('e-submit').textContent = result.error.message;
       show('e-submit');
       btn.disabled = false; btn.textContent = 'Pay & Register';
-    });
+    } else if (result.paymentIntent.status === 'succeeded') {
+      payload.action = 'confirmPayment';
+      payload.paymentIntentId = result.paymentIntent.id;
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: {'Content-Type': 'text/plain'},
+        body: JSON.stringify(payload)
+      })
+      .then(function(){ showSuccess(payload); })
+      .catch(function(){ showSuccess(payload); });
+    }
+  });
+})
+.catch(function(err) {
+  alert('FETCH ERROR: ' + err.message);
+  document.getElementById('e-submit').textContent = 'Connection error: ' + err.message;
+  show('e-submit');
+  btn.disabled = false; btn.textContent = 'Pay & Register';
+});
 }
 
 function showSuccess(p) {
